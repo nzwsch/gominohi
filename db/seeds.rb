@@ -11,115 +11,104 @@ gomitype_csv.each do |row|
   end
 end
 
-areas = %w[
-  中央区
-  豊平区
-  清田区
-  北区
-  東区
-  白石区
-  厚別区
-  南区
-  西区
-  手稲区
-]
+class SeedTask
+  AREAS = %w[
+    中央区
+    豊平区
+    清田区
+    北区
+    東区
+    白石区
+    厚別区
+    南区
+    西区
+    手稲区
+  ].freeze
 
-areas.each { |name| Area.create(name: name) }
+  def initialize(csv_file_path)
+    csv_path = Rails.root.join(csv_file_path)
+    csv_body = File.read(csv_path, encoding: 'bom|utf-8')
+    @csv_data = CSV.parse(csv_body, headers: true)
+  end
 
-garvage_collection_path = Rails.root.join("db/2017100120191008garvagecollectioncalendar.csv")
-garvage_collection_body = File.read(garvage_collection_path, encoding: 'bom|utf-8')
-garvage_collection_csv  = CSV.parse(garvage_collection_body, headers: true)
+  def collection_areas
+    @csv_data.first.headers[2..]
+  end
 
-row = garvage_collection_csv.first
+  def import!
+    grouped_dates = filter_collection_dates.group_by { |item| item[:name] }
 
-collection_areas = row.headers[2..]
+    grouped_dates.each do |name, collection_dates|
+      collection_area_id = CollectionArea.find_by_name(name).id
+      collection_dates   = collection_dates.map do |item|
+        {
+          date: item[:date],
+          weekday: item[:weekday],
+          collection_area_id: collection_area_id,
+          gomi_type_id: item[:gomi_type_id],
+          created_at: Time.current,
+          updated_at: Time.current,
+        }
+      end
+
+      CollectionDate.insert_all(collection_dates)
+    end
+  end
+
+  private
+
+  def filter_collection_dates
+    collection_dates = []
+
+    @csv_data.each do |row|
+      date    = row[0]
+      weekday = row[1]
+
+      row.headers[2..].each_with_index do |name, index|
+        gomi_type_id = row[2 + index]
+
+        next if gomi_type_id.to_i == 0
+
+        collection_dates.push({
+          date: date,
+          weekday: weekday,
+          name: name,
+          gomi_type_id: gomi_type_id
+        })
+      end
+    end
+
+    collection_dates
+  end
+end
+
+SeedTask::AREAS.each { |name| Area.create(name: name) }
+
+seed_task = SeedTask.new("db/2017100120191008garvagecollectioncalendar.csv")
+
+collection_areas = seed_task.collection_areas
 original_collection_areas = collection_areas.size
 collection_areas.each { |name| CollectionArea.create_by_area_name(name) }
 
-collection_dates = []
+seed_task.import!
 
-garvage_collection_csv.each do |row|
-  date    = row[0]
-  weekday = row[1]
+seed_task = SeedTask.new("db/garvagecollectioncalendar201910.csv")
 
-  row.headers[2..].each_with_index do |name, index|
-    gomi_type_id = row[2 + index]
-
-    next if gomi_type_id.to_i == 0
-
-    collection_dates.push({
-      date: date,
-      weekday: weekday,
-      name: name,
-      gomi_type_id: gomi_type_id
-    })
-  end
-end
-
-grouped_dates = collection_dates.group_by { |item| item[:name] }
-
-grouped_dates.each do |name, collection_dates|
-  collection_area_id = CollectionArea.find_by_name(name).id
-  collection_dates   = collection_dates.map do |item|
-    {
-      date: item[:date],
-      weekday: item[:weekday],
-      collection_area_id: collection_area_id,
-      gomi_type_id: item[:gomi_type_id],
-      created_at: Time.current,
-      updated_at: Time.current,
-    }
-  end
-
-  CollectionDate.insert_all(collection_dates)
-end
-
-garvage_collection_path = Rails.root.join("db/garvagecollectioncalendar201910.csv")
-garvage_collection_body = File.read(garvage_collection_path, encoding: 'bom|utf-8')
-garvage_collection_csv  = CSV.parse(garvage_collection_body, headers: true)
-
-row = garvage_collection_csv.first
-
-collection_areas = row.headers[2..]
+collection_areas = seed_task.collection_areas
 warn "[!] collection_areas has changed" if collection_areas.size != original_collection_areas
 
-collection_dates = []
+seed_task.import!
 
-garvage_collection_csv.each do |row|
-  date    = row[0]
-  weekday = row[1]
+seed_task = SeedTask.new("db/garvagecollectioncalendar202010.csv")
 
-  row.headers[2..].each_with_index do |name, index|
-    gomi_type_id = row[2 + index]
+collection_areas = seed_task.collection_areas
+warn "[!] collection_areas has changed" if collection_areas.size != original_collection_areas
 
-    next if gomi_type_id.to_i == 0
+seed_task.import!
 
-    collection_dates.push({
-      date: date,
-      weekday: weekday,
-      name: name,
-      gomi_type_id: gomi_type_id
-    })
-  end
-end
+seed_task = SeedTask.new("db/garvagecollectioncalendar202110.csv")
 
-grouped_dates = collection_dates.group_by { |item| item[:name] }
+collection_areas = seed_task.collection_areas
+warn "[!] collection_areas has changed" if collection_areas.size != original_collection_areas
 
-grouped_dates.each do |name, collection_dates|
-  collection_area_id = CollectionArea.find_by_name(name).id
-  collection_dates   = collection_dates.map do |item|
-    {
-      date: item[:date],
-      weekday: item[:weekday],
-      collection_area_id: collection_area_id,
-      gomi_type_id: item[:gomi_type_id],
-      created_at: Time.current,
-      updated_at: Time.current,
-    }
-  end
-
-  CollectionDate.insert_all(collection_dates)
-end
-
-# garvage_collection_path = Rails.root.join("db/garvagecollectioncalendar202010.csv")
-# garvage_collection_path = Rails.root.join("db/garvagecollectioncalendar202110.csv")
+seed_task.import!

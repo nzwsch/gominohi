@@ -1,0 +1,2 @@
+class GomiType < ApplicationRecord
+end

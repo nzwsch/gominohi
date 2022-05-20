@@ -42,26 +42,22 @@ end
 
 grouped_dates = collection_dates.group_by { |collection_date| collection_date[:name] }
 
+ActiveRecord::Base.transaction do
 grouped_dates.each do |name, collection_dates|
-  collection_area = CollectionArea.find_by_name(name)
+  collection_area_id = CollectionArea.find_by_name(name).id
+  collection_dates   = collection_dates.map do |item|
+    {
+      date: item[:date],
+      weekday: item[:weekday],
+      collection_area_id: collection_area_id,
+      created_at: Time.current, # rails 7 can handle this!
+      updated_at: Time.current, # rails 7 can handle this!
+    }
+  end
 
-  ActiveRecord::Base.transaction do
-    collection_dates.each do |item|
-      CollectionDate.create(
-        date: item[:date],
-        weekday: item[:weekday],
-        collection_area: collection_area,
-      )
-    end
+    CollectionDate.insert_all(collection_dates)
   end
 end
-
-#
-# CollectionDate.create(
-#   date: date,
-#   weekday: weekday,
-#   collection_area: collection_area,
-# )
 
 # garvage_collection_path = Rails.root.join("db/garvagecollectioncalendar201910.csv")
 # garvage_collection_path = Rails.root.join("db/garvagecollectioncalendar202010.csv")

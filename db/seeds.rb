@@ -2,7 +2,14 @@ gomitype_path = Rails.root.join("db/gomitypenumber.csv")
 gomitype_body = File.read(gomitype_path, encoding: 'bom|utf-8')
 gomitype_csv  = CSV.parse(gomitype_body, headers: true)
 
-gomitype_csv.each { |row| GomiType.create(kind: row["記号"], name: row["ごみ種"]) }
+gomitype_csv.each do |row|
+  if row["記号"].to_i > 0
+    GomiType.create(
+      id: row["記号"],
+      name: row["ごみ種"],
+    )
+  end
+end
 
 areas = %w[
   中央区
@@ -35,14 +42,22 @@ garvage_collection_csv.each do |row|
   date    = row[0]
   weekday = row[1]
 
-  row.headers[2..].each do |name|
-    collection_dates.push({ date: date, weekday: weekday, name: name })
+  row.headers[2..].each_with_index do |name, index|
+    gomi_type_id = row[2 + index]
+
+    next if gomi_type_id.to_i == 0
+
+    collection_dates.push({
+      date: date,
+      weekday: weekday,
+      name: name,
+      gomi_type_id: gomi_type_id
+    })
   end
 end
 
-grouped_dates = collection_dates.group_by { |collection_date| collection_date[:name] }
+grouped_dates = collection_dates.group_by { |item| item[:name] }
 
-ActiveRecord::Base.transaction do
 grouped_dates.each do |name, collection_dates|
   collection_area_id = CollectionArea.find_by_name(name).id
   collection_dates   = collection_dates.map do |item|
@@ -50,13 +65,13 @@ grouped_dates.each do |name, collection_dates|
       date: item[:date],
       weekday: item[:weekday],
       collection_area_id: collection_area_id,
-      created_at: Time.current, # rails 7 can handle this!
-      updated_at: Time.current, # rails 7 can handle this!
+      gomi_type_id: item[:gomi_type_id],
+      created_at: Time.current,
+      updated_at: Time.current,
     }
   end
 
-    CollectionDate.insert_all(collection_dates)
-  end
+  CollectionDate.insert_all(collection_dates)
 end
 
 # garvage_collection_path = Rails.root.join("db/garvagecollectioncalendar201910.csv")

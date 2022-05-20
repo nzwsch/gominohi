@@ -33,13 +33,14 @@ ActiveRecord::Schema.define(version: 2022_05_20_115700) do
     t.date "date", null: false
     t.string "weekday", null: false
     t.bigint "collection_area_id", null: false
+    t.bigint "gomi_type_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["collection_area_id"], name: "index_collection_dates_on_collection_area_id"
+    t.index ["gomi_type_id"], name: "index_collection_dates_on_gomi_type_id"
   end
 
-  create_table "gomi_types", force: :cascade do |t|
-    t.integer "kind", null: false
+  create_table "gomi_types", id: :serial, force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -47,4 +48,5 @@ ActiveRecord::Schema.define(version: 2022_05_20_115700) do
 
   add_foreign_key "collection_areas", "areas"
   add_foreign_key "collection_dates", "collection_areas"
+  add_foreign_key "collection_dates", "gomi_types"
 end

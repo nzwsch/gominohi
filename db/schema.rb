@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_05_20_112856) do
+ActiveRecord::Schema.define(version: 2022_05_20_114457) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -21,6 +21,14 @@ ActiveRecord::Schema.define(version: 2022_05_20_112856) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  create_table "collection_areas", force: :cascade do |t|
+    t.bigint "area_id", null: false
+    t.string "name", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["area_id"], name: "index_collection_areas_on_area_id"
+  end
+
   create_table "gomi_types", force: :cascade do |t|
     t.integer "kind", null: false
     t.string "name", null: false
@@ -28,4 +36,5 @@ ActiveRecord::Schema.define(version: 2022_05_20_112856) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  add_foreign_key "collection_areas", "areas"
 end

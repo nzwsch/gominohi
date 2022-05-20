@@ -1,5 +1,6 @@
 class CollectionArea < ApplicationRecord
   belongs_to :area
+  has_many :collection_dates
 
   class << self
     def create_by_area_name(name)

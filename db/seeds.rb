@@ -72,13 +72,24 @@ class SeedTask
         collection_dates.push({
           date: date,
           weekday: weekday,
-          name: name,
-          gomi_type_id: gomi_type_id
+          name: replace_special_numbers(name),
+          gomi_type_id: gomi_type_id,
         })
       end
     end
 
     collection_dates
+  end
+
+  def replace_special_numbers(name)
+    name
+      .gsub('①', '1')
+      .gsub('②', '2')
+      .gsub('③', '3')
+      .gsub('④', '4')
+      .gsub('⑤', '5')
+      .gsub('⑥', '6')
+      .gsub('⑦', '7')
   end
 end
 

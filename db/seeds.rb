@@ -29,19 +29,39 @@ collection_areas = row.headers[2..]
 p collection_areas.size
 collection_areas.each { |name| CollectionArea.create_by_area_name(name) }
 
+collection_dates = []
+
 garvage_collection_csv.each do |row|
   date    = row[0]
   weekday = row[1]
 
   row.headers[2..].each do |name|
-    collection_area = CollectionArea.find_by_name(name)
-    CollectionDate.create(
-      date: date,
-      weekday: weekday,
-      collection_area: collection_area,
-    )
+    collection_dates.push({ date: date, weekday: weekday, name: name })
   end
 end
+
+grouped_dates = collection_dates.group_by { |collection_date| collection_date[:name] }
+
+grouped_dates.each do |name, collection_dates|
+  collection_area = CollectionArea.find_by_name(name)
+
+  ActiveRecord::Base.transaction do
+    collection_dates.each do |item|
+      CollectionDate.create(
+        date: item[:date],
+        weekday: item[:weekday],
+        collection_area: collection_area,
+      )
+    end
+  end
+end
+
+#
+# CollectionDate.create(
+#   date: date,
+#   weekday: weekday,
+#   collection_area: collection_area,
+# )
 
 # garvage_collection_path = Rails.root.join("db/garvagecollectioncalendar201910.csv")
 # garvage_collection_path = Rails.root.join("db/garvagecollectioncalendar202010.csv")

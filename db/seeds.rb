@@ -1,7 +1,7 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Examples:
-#
-#   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
-#   Character.create(name: 'Luke', movie: movies.first)
+gomitype_path = Rails.root.join("db/gomitypenumber.csv")
+gomitype_body = File.read(gomitype_path, encoding: 'bom|utf-8')
+gomitype_csv  = CSV.parse(gomitype_body, headers: true)
+
+gomitype_csv.each do |row|
+  GomiType.create(kind: row["記号"], name: row["ごみ種"])
+end

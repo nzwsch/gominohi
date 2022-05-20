@@ -1,17 +1,20 @@
-gomitype_path = Rails.root.join("db/gomitypenumber.csv")
+# frozen_string_literal: true
+
+gomitype_path = Rails.root.join('db/gomitypenumber.csv')
 gomitype_body = File.read(gomitype_path, encoding: 'bom|utf-8')
 gomitype_csv  = CSV.parse(gomitype_body, headers: true)
 
 gomitype_csv.each do |row|
-  if row["記号"].to_i > 0
-    GomiType.create(
-      id: row["記号"],
-      name: row["ごみ種"],
-    )
-  end
+  next if row['記号'].to_i.zero?
+
+  GomiType.create(
+    id: row['記号'],
+    name: row['ごみ種']
+  )
 end
 
-class SeedTask
+# Import csv
+class ImportCsvTask
   AREAS = %w[
     中央区
     豊平区
@@ -35,6 +38,7 @@ class SeedTask
     @csv_data.first.headers[2..]
   end
 
+  # C: Metrics/MethodLength: Method has too many lines. [15/10]
   def import!
     grouped_dates = filter_collection_dates.group_by { |item| item[:name] }
 
@@ -47,7 +51,7 @@ class SeedTask
           collection_area_id: collection_area_id,
           gomi_type_id: item[:gomi_type_id],
           created_at: Time.current,
-          updated_at: Time.current,
+          updated_at: Time.current
         }
       end
 
@@ -57,6 +61,7 @@ class SeedTask
 
   private
 
+  # C: Metrics/MethodLength: Method has too many lines. [16/10]
   def filter_collection_dates
     collection_dates = []
 
@@ -67,14 +72,14 @@ class SeedTask
       row.headers[2..].each_with_index do |name, index|
         gomi_type_id = row[2 + index]
 
-        next if gomi_type_id.to_i == 0
+        next if gomi_type_id.to_i.zero?
 
-        collection_dates.push({
+        collection_dates.push(
           date: date,
           weekday: weekday,
           name: replace_special_numbers(name),
-          gomi_type_id: gomi_type_id,
-        })
+          gomi_type_id: gomi_type_id
+        )
       end
     end
 
@@ -93,33 +98,33 @@ class SeedTask
   end
 end
 
-SeedTask::AREAS.each { |name| Area.create(name: name) }
+ImportCsvTask::AREAS.each { |name| Area.create(name: name) }
 
-seed_task = SeedTask.new("db/2017100120191008garvagecollectioncalendar.csv")
+import_csv_task = ImportCsvTask.new('db/2017100120191008garvagecollectioncalendar.csv')
 
-collection_areas = seed_task.collection_areas
+collection_areas = import_csv_task.collection_areas
 original_collection_areas = collection_areas.size
 collection_areas.each { |name| CollectionArea.create_by_area_name(name) }
 
-seed_task.import!
+import_csv_task.import!
 
-seed_task = SeedTask.new("db/garvagecollectioncalendar201910.csv")
+import_csv_task = ImportCsvTask.new('db/garvagecollectioncalendar201910.csv')
 
-collection_areas = seed_task.collection_areas
-warn "[!] collection_areas has changed" if collection_areas.size != original_collection_areas
+collection_areas = import_csv_task.collection_areas
+warn '[!] collection_areas has changed' if collection_areas.size != original_collection_areas
 
-seed_task.import!
+import_csv_task.import!
 
-seed_task = SeedTask.new("db/garvagecollectioncalendar202010.csv")
+import_csv_task = ImportCsvTask.new('db/garvagecollectioncalendar202010.csv')
 
-collection_areas = seed_task.collection_areas
-warn "[!] collection_areas has changed" if collection_areas.size != original_collection_areas
+collection_areas = import_csv_task.collection_areas
+warn '[!] collection_areas has changed' if collection_areas.size != original_collection_areas
 
-seed_task.import!
+import_csv_task.import!
 
-seed_task = SeedTask.new("db/garvagecollectioncalendar202110.csv")
+import_csv_task = ImportCsvTask.new('db/garvagecollectioncalendar202110.csv')
 
-collection_areas = seed_task.collection_areas
-warn "[!] collection_areas has changed" if collection_areas.size != original_collection_areas
+collection_areas = import_csv_task.collection_areas
+warn '[!] collection_areas has changed' if collection_areas.size != original_collection_areas
 
-seed_task.import!
+import_csv_task.import!

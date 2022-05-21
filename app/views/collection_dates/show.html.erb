@@ -1,0 +1,17 @@
+<div class="container pt-3">
+  <h2><%= collection_date_title %></h2>
+
+  <div class="my-4">
+    <div class="btn-group" role="group">
+      <a href="<%= collection_date_path(params[:collection_area_id], date: page_date.yesterday.to_s) %>" class="btn btn-outline-info">前日</a>
+      <button type="button" class="btn btn-outline-info">今日</button>
+      <a href="<%= collection_date_path(params[:collection_area_id], date: page_date.tomorrow.to_s) %>" class="btn btn-outline-info">翌日</a>
+    </div>
+  </div>
+
+  <% if @collection_date.present? %>
+    <%= @collection_date.date %>
+  <% else %>
+    <h3>収集なし</h3>
+  <% end %>
+</div>

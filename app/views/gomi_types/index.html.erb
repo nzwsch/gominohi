@@ -1,0 +1,18 @@
+<div class="container pt-3">
+  <h2><%= "#{@collection_area.area_name}: 回収品目一覧" %></h2>
+
+  <div class="">
+    <% @gomi_types.each do |gomi_type| %>
+      <div class="">
+
+        <div class="area">
+          <div class="mb-3">
+            <%= link_to "#{@collection_area.area_name}の#{gomi_type.name}回収日検索",
+                        collection_area_gomi_type_path(@collection_area, gomi_type) %>
+          </div>
+        </div>
+
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,18 @@
+<div class="container pt-3">
+  <h2><%= "#{@collection_area.area_name}の#{@gomi_type.name}回収日検索" %></h2>
+
+  <div class="">
+    <% @collection_dates.each do |collection_date| %>
+      <div class="">
+
+        <span class="area">
+          <%= collection_date.date %> |
+        </span>
+        <span class="area">
+          <%= collection_date.weekday %>
+        </span>
+
+      </div>
+    <% end %>
+  </div>
+</div>

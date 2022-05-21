@@ -13,7 +13,6 @@ gomitype_csv.each do |row|
   )
 end
 
-# Import csv
 module SeedTask
   AREAS = %w[
     中央区
@@ -28,10 +27,25 @@ module SeedTask
     手稲区
   ].freeze
 
+  CollectionItem = Struct.new(:date, :weekday, :name, :gomi_type_id) do
+    def group_name
+      name
+        .gsub('①', '1')
+        .gsub('②', '2')
+        .gsub('③', '3')
+        .gsub('④', '4')
+        .gsub('⑤', '5')
+        .gsub('⑥', '6')
+        .gsub('⑦', '7')
+    end
+  end
+
+  # Import collection dates from csv
   class CsvImporter
     def initialize(csv_file_path)
       csv_path = Rails.root.join(csv_file_path)
       csv_body = File.read(csv_path, encoding: 'bom|utf-8')
+
       @csv_data = CSV.parse(csv_body, headers: true)
     end
 
@@ -41,16 +55,16 @@ module SeedTask
 
     # C: Metrics/MethodLength: Method has too many lines. [15/10]
     def import!
-      grouped_dates = filter_collection_dates.group_by { |item| item[:name] }
+      grouped_dates = filter_collection_dates.group_by(&:group_name)
 
       grouped_dates.each do |name, collection_dates|
         collection_area_id = CollectionArea.find_by_name(name).id
         collection_dates   = collection_dates.map do |item|
           {
-            date: item[:date],
-            weekday: item[:weekday],
+            date: item.date,
+            weekday: item.weekday,
             collection_area_id: collection_area_id,
-            gomi_type_id: item[:gomi_type_id],
+            gomi_type_id: item.gomi_type_id,
             created_at: Time.current,
             updated_at: Time.current
           }
@@ -62,10 +76,25 @@ module SeedTask
 
     private
 
-    # C: Metrics/MethodLength: Method has too many lines. [16/10]
     def filter_collection_dates
-      collection_dates = []
+      CsvFilter.new(@csv_data).collection_dates
+    end
+  end
 
+  # clean csv data
+  class CsvFilter
+    def initialize(csv_data)
+      @collection_dates = []
+      @csv_data         = csv_data
+
+      filter!
+    end
+
+    attr_reader :collection_dates
+
+    private
+
+    def filter!
       @csv_data.each do |row|
         date    = row[0]
         weekday = row[1]
@@ -75,27 +104,11 @@ module SeedTask
 
           next if gomi_type_id.to_i.zero?
 
-          collection_dates.push(
-            date: date,
-            weekday: weekday,
-            name: replace_special_numbers(name),
-            gomi_type_id: gomi_type_id
-          )
+          collection_item = CollectionItem.new(date, weekday, name, gomi_type_id)
+
+          collection_dates.push(collection_item)
         end
       end
-
-      collection_dates
-    end
-
-    def replace_special_numbers(name)
-      name
-        .gsub('①', '1')
-        .gsub('②', '2')
-        .gsub('③', '3')
-        .gsub('④', '4')
-        .gsub('⑤', '5')
-        .gsub('⑥', '6')
-        .gsub('⑦', '7')
     end
   end
 end

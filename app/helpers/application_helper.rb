@@ -10,6 +10,13 @@ module ApplicationHelper
 
   def collection_date_title
     weekday = WEEKDAYS[page_date.wday]
+
     page_date.strftime("%-m月%-d日(#{weekday})の収集品目")
+  end
+
+  def active_if_today(class_string = '')
+    is_today = params[:date].to_s.empty? || params[:date] == Date.today.to_s
+
+    is_today ? "#{class_string} active" : class_string
   end
 end

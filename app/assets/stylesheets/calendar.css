@@ -1,0 +1,19 @@
+#calendar {
+  max-width: 600px;
+}
+
+#calendar .wrapper {
+  width: 100%;
+  display: grid;
+  grid-gap: 2px;
+  grid-template-columns: repeat(7, 100px);
+}
+
+#calendar .date {
+  background-color: #eee;
+  border: solid 2px #ccc;
+  border-radius: 4px;
+  padding: 20px;
+  font-size: 150%;
+  height: 100px;
+}

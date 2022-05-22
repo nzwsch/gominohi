@@ -1,18 +1,16 @@
 <div class="container pt-3">
-  <h2><%= "#{@collection_area.area_name}の#{@gomi_type.name}回収日検索" %></h2>
+  <h2 class="mb-3"><%= "#{@collection_area.area_name}の#{@gomi_type.name}回収日検索" %></h2>
 
-  <div class="">
-    <% @collection_dates.each do |collection_date| %>
-      <div class="">
-
-        <span class="area">
-          <%= collection_date.date %> |
-        </span>
-        <span class="area">
-          <%= collection_date.weekday %>
-        </span>
-
-      </div>
-    <% end %>
+  <div class="row">
+    <div class="col-4">
+      <ul class="list-group">
+        <% @collection_dates.each do |collection_date| %>
+          <li class="list-group-item">
+            <h3><%= distance_of_time_in_words_to_now collection_date.date %></h3>
+            <span class="text-muted"><%= collection_date.display_item %></span>
+          </li>
+        <% end %>
+      </ul>
+    </div>
   </div>
 </div>

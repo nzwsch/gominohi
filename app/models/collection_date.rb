@@ -6,4 +6,9 @@ class CollectionDate < ApplicationRecord
   validates_presence_of :weekday
 
   scope :with_gomi_type, -> { joins(:gomi_type).select('*, gomi_types.name as gomi_type_name') }
+
+  # presentation
+  def display_item
+    "#{date.strftime('%Y年%-m月%-d日')}(#{weekday})"
+  end
 end

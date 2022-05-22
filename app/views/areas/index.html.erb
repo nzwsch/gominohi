@@ -9,7 +9,7 @@
 
         <div class="list-group">
           <% area.collection_areas.each do |collection_area| %>
-            <%= link_to collection_date_path(collection_area), class: "list-group-item list-group-item-action" do %>
+            <%= link_to collection_area_collection_dates_path(collection_area), class: "list-group-item list-group-item-action" do %>
               <%= collection_area.name %>
             <% end %>
           <% end %>

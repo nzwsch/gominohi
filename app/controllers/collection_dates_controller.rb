@@ -4,7 +4,7 @@ class CollectionDatesController < ApplicationController
   def show
     date = params[:date].presence || Date.today
 
-    @collection_date = @collection_area.collection_dates.joins(:gomi_type).select('*, gomi_types.name as gomi_type_name').where(date: date).first
+    @collection_date = @collection_area.collection_dates.with_gomi_type.where(date: date).first
   end
 
   private

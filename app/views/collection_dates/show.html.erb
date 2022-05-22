@@ -3,9 +3,9 @@
 
   <div class="my-4">
     <div class="btn-group" role="group">
-      <a href="<%= collection_date_path(@collection_area, date: page_date.yesterday.to_s) %>" class="btn btn-outline-info">前日</a>
-      <a href="<%= collection_date_path(@collection_area, date: Date.today.to_s) %>" class="<%= active_if_today("btn btn-outline-info") %>">今日</a>
-      <a href="<%= collection_date_path(@collection_area, date: page_date.tomorrow.to_s) %>" class="btn btn-outline-info">翌日</a>
+      <a href="<%= collection_area_collection_dates_path(@collection_area, date: page_date.yesterday.to_s) %>" class="btn btn-outline-info">前日</a>
+      <a href="<%= collection_area_collection_dates_path(@collection_area, date: Date.today.to_s) %>" class="<%= active_if_today("btn btn-outline-info") %>">今日</a>
+      <a href="<%= collection_area_collection_dates_path(@collection_area, date: page_date.tomorrow.to_s) %>" class="btn btn-outline-info">翌日</a>
     </div>
   </div>
 

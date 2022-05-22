@@ -9,11 +9,19 @@
   grid-template-columns: repeat(7, 100px);
 }
 
-#calendar .date {
-  background-color: #fdfdfd;
+#calendar .blank {
+  background-color: #e7e7e7;
   border: solid 2px #d0d0d0;
   border-radius: 4px;
   padding: 8px;
   font-size: 11px;
   height: 100px;
+}
+
+#calendar .date {
+  background-color: #fdfdfd;
+}
+
+#calendar .today {
+  background-color: #fdff8f;
 }

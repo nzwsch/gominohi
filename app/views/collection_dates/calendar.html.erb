@@ -1,11 +1,15 @@
 <div class="container pt-3">
-  <h2 class="mb-3">カレンダー</h2>
+  <h2 class="mb-3"><%= "#{this_month}月のカレンダー" %></h2>
 
-  <div id="calendar" data-year="<%= Date.today.year %>" data-month="<%= Date.today.month %>">
-
-    <div class="wrapper"></div>
-
+  <div class="my-4">
+    <div class="btn-group" role="group">
+      <a href="<%= calendar_collection_area_collection_dates_path(@collection_area, month: prev_month) %>" class="btn btn-outline-info">前月</a>
+      <a href="<%= calendar_collection_area_collection_dates_path(@collection_area, month: Date.current.month) %>" class="<%= active_if_this_month("btn btn-outline-info") %>">今月</a>
+      <a href="<%= calendar_collection_area_collection_dates_path(@collection_area, month: next_month) %>" class="btn btn-outline-info">翌月</a>
+    </div>
   </div>
+
+  <div id="calendar" data-year="<%= this_year %>" data-month="<%= this_month %>"></div>
 </div>
 
 <%= javascript_include_tag 'calendar' %>

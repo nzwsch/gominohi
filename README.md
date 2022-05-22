@@ -1,24 +1,11 @@
-# README
+# Gominohi ごみ収集日検索
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+札幌市のごみ収集日を以下の方法で検索できるアプリケーションです:
 
-Things you may want to cover:
+- 収集日検索
+- 逆引き検索
+- カレンダー検索
 
-* Ruby version
+2022/5月の時点ではブラウザのみの対応ですが、JSON形式での検索にも対応したいです。
 
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+[Heroku](https://gominohi-2022.herokuapp.com/)

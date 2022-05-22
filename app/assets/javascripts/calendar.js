@@ -17,6 +17,7 @@ const endOfTheMonth = END_DAYS[thisMonth - 1];
 const todayYear = new Date().getFullYear(); // local
 const todayMonth = new Date().getMonth() + 1; // local
 const today = new Date().getDate();
+const collectionDates = JSON.parse(calendar.dataset.collectionDates);
 
 for (let i = 0; i < 7; i++) {
   const div = document.createElement("div");
@@ -31,10 +32,15 @@ for (let i = 1; i <= 7 * 6; i++) {
   }
 
   const div = document.createElement("div");
+
   div.classList.add("blank", "text-muted");
 
   if (i > beggingOfTheMonth && i - beggingOfTheMonth <= endOfTheMonth) {
-    div.innerHTML = (i - beggingOfTheMonth).toString();
+    const day = i - beggingOfTheMonth;
+    const item = collectionDates[day];
+
+    div.innerHTML = item != null ? `${day} <span class="item">${item}</span>` : day.toString();
+
     div.classList.add("date");
   }
 

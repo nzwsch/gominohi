@@ -25,3 +25,10 @@
 #calendar .today {
   background-color: #fdff8f;
 }
+
+#calendar .item {
+  color: #212529;
+  font-size: 1rem;
+  display: block;
+  margin-top: 5px;
+}

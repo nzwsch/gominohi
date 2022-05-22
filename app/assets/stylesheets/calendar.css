@@ -10,10 +10,10 @@
 }
 
 #calendar .date {
-  background-color: #eee;
-  border: solid 2px #ccc;
+  background-color: #fdfdfd;
+  border: solid 2px #d0d0d0;
   border-radius: 4px;
-  padding: 20px;
-  font-size: 150%;
+  padding: 8px;
+  font-size: 11px;
   height: 100px;
 }

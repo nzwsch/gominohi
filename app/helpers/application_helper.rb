@@ -4,14 +4,14 @@ module ApplicationHelper
   def page_date
     @page_date ||= begin
       date = params.fetch(:date, nil)
-      !date.nil? ? Date.parse(date) : Date.today
+      !date.nil? ? Date.parse(date) : Date.current
     end
   end
 
 
   def page_month
     @this_month ||= begin
-      today = Date.today
+      today = Date.current
       year  = today.year # FIXME
       month = (params.fetch(:month, nil).presence || today.month).to_i
       Date.new(year, month, 1) # withZone
@@ -25,13 +25,13 @@ module ApplicationHelper
   end
 
   def active_if_today(class_string = '')
-    is_today = params[:date].to_s.empty? || params[:date] == Date.today.to_s
+    is_today = params[:date].to_s.empty? || params[:date] == Date.current.to_s
 
     is_today ? "#{class_string} active" : class_string
   end
 
   def active_if_this_month(class_string = '')
-    is_this_month = params[:month].to_s.empty? || params[:month] == this_month.to_s
+    is_this_month = params[:month].to_s.empty? || params[:month] == Date.current.month.to_s
 
     is_this_month ? "#{class_string} active" : class_string
   end

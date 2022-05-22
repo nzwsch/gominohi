@@ -1,10 +1,10 @@
 <div class="container pt-3">
-  <h2 class="mb-3"><%= "#{@collection_area.area_name}: 回収品目一覧" %></h2>
+  <h2 class="mb-3"><%= "#{@collection_area.name}: 回収品目一覧" %></h2>
 
   <ul class="nav flex-column">
     <% @gomi_types.each do |gomi_type| %>
       <li class="nav-item">
-        <%= link_to "#{@collection_area.area_name}の#{gomi_type.name}回収日検索", collection_area_gomi_type_path(@collection_area, gomi_type), class: "nav-link" %>
+        <%= link_to "#{gomi_type.name}回収日検索", collection_area_gomi_type_path(@collection_area, gomi_type), class: "nav-link" %>
       </li>
     <% end %>
   </ul>

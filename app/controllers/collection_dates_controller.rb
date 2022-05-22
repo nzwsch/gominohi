@@ -23,6 +23,6 @@ class CollectionDatesController < ApplicationController
   private
 
     def set_collection_area
-      @collection_area = CollectionArea.with_area_name.find(params[:collection_area_id])
+      @collection_area = CollectionArea.find(params[:collection_area_id])
     end
 end

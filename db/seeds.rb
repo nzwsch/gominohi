@@ -27,16 +27,20 @@ module SeedTask
     手稲区
   ].freeze
 
+  def self.rename_to_group_name(name)
+    name
+      .gsub('①', '1')
+      .gsub('②', '2')
+      .gsub('③', '3')
+      .gsub('④', '4')
+      .gsub('⑤', '5')
+      .gsub('⑥', '6')
+      .gsub('⑦', '7')
+  end
+
   CollectionItem = Struct.new(:date, :weekday, :name, :gomi_type_id) do
     def group_name
-      name
-        .gsub('①', '1')
-        .gsub('②', '2')
-        .gsub('③', '3')
-        .gsub('④', '4')
-        .gsub('⑤', '5')
-        .gsub('⑥', '6')
-        .gsub('⑦', '7')
+      SeedTask.rename_to_group_name(name)
     end
   end
 
@@ -50,7 +54,7 @@ module SeedTask
     end
 
     def collection_areas
-      @csv_data.first.headers[2..]
+      @csv_data.first.headers[2..].map { |name| SeedTask.rename_to_group_name(name) }
     end
 
     # C: Metrics/MethodLength: Method has too many lines. [15/10]
@@ -115,31 +119,11 @@ end
 
 SeedTask::AREAS.each { |name| Area.create(name: name) }
 
-csv_importer = SeedTask::CsvImporter.new('db/2017100120191008garvagecollectioncalendar.csv')
-
-collection_areas = csv_importer.collection_areas
-original_size = collection_areas.size
-collection_areas.each { |name| CollectionArea.create_by_area_name(name) }
-
-csv_importer.import!
-
-csv_importer = SeedTask::CsvImporter.new('db/garvagecollectioncalendar201910.csv')
-
-current_size = csv_importer.collection_areas.size
-warn '[!] collection_areas has changed' if current_size != original_size
-
-csv_importer.import!
-
-csv_importer = SeedTask::CsvImporter.new('db/garvagecollectioncalendar202010.csv')
-
-current_size = csv_importer.collection_areas.size
-warn '[!] collection_areas has changed' if current_size != original_size
-
-csv_importer.import!
-
 csv_importer = SeedTask::CsvImporter.new('db/garvagecollectioncalendar202110.csv')
-
-current_size = csv_importer.collection_areas.size
-warn '[!] collection_areas has changed' if current_size != original_size
-
+collection_areas = csv_importer.collection_areas
+collection_areas.each { |name| CollectionArea.create_by_area_name(name) }
 csv_importer.import!
+
+# workaround heroku db
+delete_count = CollectionDate.count - 8000 # keep 8000 records
+CollectionDate.order(id: :asc).limit(delete_count).destroy_all
